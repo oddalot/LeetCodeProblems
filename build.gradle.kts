@@ -43,7 +43,7 @@ tasks.register("createNewModule") {
         )
 
         File("settings.gradle.kts").appendText(
-            "/n" +
+            "\n" +
             """
                 include("$moduleName")
             """.trimIndent()
