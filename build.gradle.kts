@@ -15,6 +15,7 @@ tasks.register("createNewModule") {
         File("$moduleName/src/test/kotlin/Test.kt").appendText(
             """
                 class Test {
+                    private val solution = Solution()
                 }
             """.trimIndent()
         )
