@@ -27,6 +27,25 @@ class Board {
             cells[rowIndex + (9 * 8)]
         )
     }
+    private val boxes = Array(9) { boxIndex ->
+        // 0, 1, 2, 9, 10, 11, 18, 19, 20
+        // 3, 4, 5, 12, 13, 14, 21, 22, 23
+        // 6, 7, 8, 15, 16, 17, 24, 25, 26
+        // 27, 28, 29, 36, 37, 38, 45, 46, 47
+        val rowScale = ((boxIndex % 3) * 3) + (27 * (boxIndex / 3))
+
+        arrayOf(
+            cells[0 + rowScale],
+            cells[1 + rowScale],
+            cells[2 + rowScale],
+            cells[9 + rowScale],
+            cells[10 + rowScale],
+            cells[11 + rowScale],
+            cells[18 + rowScale],
+            cells[19 + rowScale],
+            cells[20 + rowScale]
+        )
+    }
 
     fun printBoard() {
         cells.forEach { cell ->
@@ -46,11 +65,46 @@ class Board {
                 println("column cell: ${cell.location}, ${cell.value}")
             }
         }
+
+        boxes.forEach { box ->
+            println("boxes: $boxes")
+            box.forEach { cell ->
+                println("box cell: ${cell.location}, ${cell.value}")
+            }
+        }
+    }
+
+    fun printFriendlyBoard() {
+        println("-------------------------------------------------------")
+        rows.forEach { row ->
+            row.forEach { cell ->
+                print("|")
+                print(cell.value)
+            }
+            println("|")
+            println("-------------------------------------------------------")
+        }
+
     }
 }
 
-class Cell(val value: Value, val location: Int)
+class Cell(var value: Value, val location: Int)
 
 enum class Value {
-    EMPTY, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE
+    EMPTY, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE;
+
+    override fun toString(): String {
+        return when (this) {
+            EMPTY -> "EMPTY"
+            ONE -> "-ONE-"
+            TWO -> "-TWO-"
+            THREE -> "THREE"
+            FOUR -> "-FOUR"
+            FIVE -> "-FIVE"
+            SIX -> "-SIX-"
+            SEVEN -> "SEVEN"
+            EIGHT -> "EIGHT"
+            NINE -> "-NINE"
+        }
+    }
 }
