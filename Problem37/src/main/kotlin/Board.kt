@@ -103,13 +103,10 @@ class Board(board: Array<CharArray>) {
     }
 
     fun printPossibleValuesForPosition(position: Int) {
-        val rows = rows[position / 9]
-        val columns = columns[position % 9]
-        val boxes = boxes[((position / 3) % 3) + ((position / 27) * 3)]
-        boxes.cells.forEach {
-
-            println(it.value)
-        }
+        val rowValues = rows[position / 9].values
+        val columnValues = columns[position % 9].values
+        val boxValues = boxes[((position / 3) % 3) + ((position / 27) * 3)].values
+        println(allPossibleValues - rowValues - columnValues - boxValues)
     }
 
     private fun setCellValue(position: Int, value: Value) {
@@ -142,7 +139,7 @@ class ValueSet(override val cells: Array<Cell>) : ValueSetInterface {
         get() = allPossibleValues - values
 
     override fun updateValues(value: Value) {
-        _values.add(value)
+        if (value != Value.EMPTY) _values.add(value)
     }
 
 }
