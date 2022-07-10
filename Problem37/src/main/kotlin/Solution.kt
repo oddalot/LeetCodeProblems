@@ -4,8 +4,6 @@ class Solution {
 
 fun main() {
     val board = Board(board1)
-    board.printFriendlyBoard()
-    board.printPossibleValuesForPosition(2)
 }
 
 val board1 = arrayOf(

@@ -60,6 +60,29 @@ class Board(board: Array<CharArray>) {
                 this.setCellValue(i++, cellChar.toValue())
             }
         }
+
+        printFriendlyBoard()
+
+        var valueFilled = true
+        while (valueFilled) {
+            valueFilled = false
+            cells.forEach { cell ->
+                if (cell.value == Value.EMPTY) {
+                    if (cell.position == 2) {
+                        println(cell.possibleValues)
+                    }
+                    // println(cell.value.toString() + " " + cell.position.toString() + " " + cell.possibleValues.size)
+                    if (cell.possibleValues.size == 1) {
+                        cell.setCellValue(cell.possibleValues.first())
+                        valueFilled = true
+                    }
+                }
+            }
+        }
+
+        println("solved")
+
+        printFriendlyBoard()
     }
 
     fun printBoard() {
@@ -101,6 +124,23 @@ class Board(board: Array<CharArray>) {
         }
 
     }
+
+    private fun Cell.setCellValue(value: Value) {
+        this@Board.setCellValue(this.position, value)
+    }
+
+    private val Cell.possibleValues : Set<Value>
+        get() {
+            val rowValues = rows[position / 9].values
+            val columnValues = columns[position % 9].values
+            val boxValues = boxes[((position / 3) % 3) + ((position / 27) * 3)].values
+            if (this.position == 2) {
+                println("rowValues: " + rowValues.toString())
+                println("columnValues: " + columnValues.toString())
+                println("boxValues: " + boxValues.toString())
+            }
+            return allPossibleValues - rowValues - columnValues - boxValues
+        }
 
     fun printPossibleValuesForPosition(position: Int) {
         val rowValues = rows[position / 9].values
