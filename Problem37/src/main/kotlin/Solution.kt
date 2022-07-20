@@ -3,7 +3,7 @@ class Solution {
 }
 
 fun main() {
-    val board = Board(board2Medium)
+    val board = Board(board1Easy)
 }
 
 

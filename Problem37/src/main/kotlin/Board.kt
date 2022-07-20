@@ -1,3 +1,5 @@
+import Value.*
+
 class Board(board: Array<CharArray>) {
     private val cells = Array(81) { position -> Cell(position = position) }
     private val rows = Array(9) { columnIndex ->
@@ -51,22 +53,22 @@ class Board(board: Array<CharArray>) {
         var i = 0
         board.forEach { row ->
             row.forEach { cellChar ->
-                cells[i++].setValue(cellChar.toValue())
+                val value = cellChar.toValue()
+                cells[i++].setUniqueValue(value)
             }
         }
 
         printFriendlyBoard()
 
-        /*
         var valueFilled = true
         while (valueFilled) {
             valueFilled = false
             cells.forEach { cell ->
-                if (cell.value == Value.EMPTY) {
+                if (cell.value == EMPTY) {
                     if (cell.position == 2) {
-                        println(cell.possibleValues)
+                        //println(cell.possibleValues)
                     }
-                    if (cell.solveSoleCandidate() || cell.solveUniqueCandidate()) {
+                    if (cell.solveSoleCandidate()) {
                         valueFilled = true
                     }
                 }
@@ -76,8 +78,6 @@ class Board(board: Array<CharArray>) {
         println("solved")
 
         printFriendlyBoard()
-
-         */
     }
 
     fun printBoard() {
@@ -117,7 +117,6 @@ class Board(board: Array<CharArray>) {
             println("|")
             println("-------------------------------------------------------")
         }
-
     }
 
     /*
@@ -176,55 +175,126 @@ class Board(board: Array<CharArray>) {
         println(allPossibleValues - rowValues - columnValues - boxValues)
     }
 
+
+     */
+
+    private fun Cell.setUniqueValue(value: Value) {
+        if (value == EMPTY) return
+        rows[position / 9].forEach { cell ->
+            if (cell.position == this.position) {
+                cell.removeOtherValues(value)
+            } else {
+                cell.removeValue(value)
+            }
+        }
+        columns[position % 9].forEach { cell ->
+            if (cell.position == this.position) {
+                cell.removeOtherValues(value)
+            } else {
+                cell.removeValue(value)
+            }
+        }
+        boxes[((position / 3) % 3) + ((position / 27) * 3)].forEach { cell ->
+            if (cell.position == this.position) {
+                cell.removeOtherValues(value)
+            } else {
+                cell.removeValue(value)
+            }
+        }
+
+        println("this pos and val " + this.position + " " + this.possibleValues)
+    }
+
     private fun Cell.solveSoleCandidate(): Boolean {
-        return true
+        val otherPossibleValues = mutableSetOf(
+            ONE,
+            TWO,
+            THREE,
+            FOUR,
+            FIVE,
+            SIX,
+            SEVEN,
+            EIGHT,
+            NINE
+        )
+        rows[position / 9].forEach { cell ->
+            if (cell.position != this.position) {
+                if (cell.value != EMPTY) otherPossibleValues.remove(cell.value)
+            }
+        }
+        columns[position % 9].forEach { cell ->
+            if (cell.position != this.position) {
+                if (cell.value != EMPTY) otherPossibleValues.remove(cell.value)
+            }
+        }
+        boxes[((position / 3) % 3) + ((position / 27) * 3)].forEach { cell ->
+            if (cell.position != this.position) {
+                if (cell.value != EMPTY) otherPossibleValues.remove(cell.value)
+            }
+        }
+
+        return if (otherPossibleValues.size == 1) {
+            //println("otherpos: " + this.position)
+            //println("otherpos values:" + this.possibleValues)
+            if (this.position == 40) println("solve40 " + otherPossibleValues.first())
+            this.setUniqueValue(otherPossibleValues.first())
+            //println("otherpos values after:" + this.possibleValues)
+            true
+        } else {
+            false
+        }
     }
 
     private fun Cell.solveUniqueCandidate(): Boolean {
         return true
     }
-
-     */
 }
 
 private val allPossibleValues = setOf(
-    Value.ONE,
-    Value.TWO,
-    Value.THREE,
-    Value.FOUR,
-    Value.FIVE,
-    Value.SIX,
-    Value.SEVEN,
-    Value.EIGHT,
-    Value.NINE
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    SIX,
+    SEVEN,
+    EIGHT,
+    NINE
 )
 
 class Cell(val position: Int) {
     private val _possibleValues = mutableSetOf(
-        Value.ONE,
-        Value.TWO,
-        Value.THREE,
-        Value.FOUR,
-        Value.FIVE,
-        Value.SIX,
-        Value.SEVEN,
-        Value.EIGHT,
-        Value.NINE
+        ONE,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        SIX,
+        SEVEN,
+        EIGHT,
+        NINE
     )
     val possibleValues: Set<Value> = _possibleValues
 
-    fun setValue(value: Value) {
-        _possibleValues.clear()
-        _possibleValues.add(value)
+    fun removeValue(value: Value) {
+        if (position == 40) println("removing40Value: " + value)
+        _possibleValues.remove(value)
+    }
+
+    fun removeOtherValues(value: Value) {
+        if (position == 40) println("removing40ValueAll: " + value)
+        _possibleValues.removeIf { possibleValue ->
+            possibleValue != value
+        }
     }
 }
 
-val Cell.value : Value
+val Cell.value: Value
     get() {
         return if (this.possibleValues.size == 1) {
             this.possibleValues.first()
         } else {
-            Value.EMPTY
+            EMPTY
         }
     }
 
@@ -249,15 +319,15 @@ enum class Value {
 
 private fun Char.toValue(): Value {
     return when (this) {
-        '1' -> Value.ONE
-        '2' -> Value.TWO
-        '3' -> Value.THREE
-        '4' -> Value.FOUR
-        '5' -> Value.FIVE
-        '6' -> Value.SIX
-        '7' -> Value.SEVEN
-        '8' -> Value.EIGHT
-        '9' -> Value.NINE
-        else -> Value.EMPTY
+        '1' -> ONE
+        '2' -> TWO
+        '3' -> THREE
+        '4' -> FOUR
+        '5' -> FIVE
+        '6' -> SIX
+        '7' -> SEVEN
+        '8' -> EIGHT
+        '9' -> NINE
+        else -> EMPTY
     }
 }
