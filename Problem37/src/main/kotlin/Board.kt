@@ -68,7 +68,7 @@ class Board(board: Array<CharArray>) {
                     if (cell.position == 2) {
                         //println(cell.possibleValues)
                     }
-                    if (cell.solveSoleCandidate()) {
+                    if (cell.solveSoleCandidate() || cell.solveUniqueCandidate()) {
                         valueFilled = true
                     }
                 }
@@ -246,7 +246,30 @@ class Board(board: Array<CharArray>) {
     }
 
     private fun Cell.solveUniqueCandidate(): Boolean {
-        return true
+        val otherPossibleValues = mutableSetOf<Value>()
+        rows[position / 9].forEach { cell ->
+            if (cell.position != this.position) {
+                otherPossibleValues.addAll(cell.possibleValues)
+            }
+        }
+        columns[position % 9].forEach { cell ->
+            if (cell.position != this.position) {
+                otherPossibleValues.addAll(cell.possibleValues)
+            }
+        }
+        boxes[((position / 3) % 3) + ((position / 27) * 3)].forEach { cell ->
+            if (cell.position != this.position) {
+                otherPossibleValues.addAll(cell.possibleValues)
+            }
+        }
+
+        val candidates = this.possibleValues - otherPossibleValues
+        return if (candidates.size == 1) {
+            this.setUniqueValue(candidates.first())
+            true
+        } else {
+            false
+        }
     }
 }
 
