@@ -73,6 +73,46 @@ class Board(board: Array<CharArray>) {
                     }
                 }
             }
+
+            rows.forEach { row ->
+                val nakedSubsets: MutableMap<Pair<Value, Value>, Int> = mutableMapOf()
+                row.forEach { cell ->
+                    if (cell.possibleValues.size == 2) {
+                        val first = if (cell.possibleValues.first() < cell.possibleValues.last()) {
+                            cell.possibleValues.first()
+                        } else {
+                            cell.possibleValues.last()
+                        }
+                        val second = if (first == cell.possibleValues.first()) {
+                            cell.possibleValues.last()
+                        } else {
+                            cell.possibleValues.first()
+                        }
+                        val foundSubset = nakedSubsets[Pair(first, second)]
+                        if (foundSubset == null) {
+                            nakedSubsets[Pair(first, second)] = 1
+                        } else {
+                            nakedSubsets[Pair(first, second)] = foundSubset + 1
+                        }
+                    }
+                }
+
+                nakedSubsets.forEach { (pair, value) ->
+                    if (value == 2) {
+                        row.forEach { cell ->
+                            if (cell.possibleValues.size > 2 && cell.possibleValues.contains(pair.first) && cell.possibleValues.contains(
+                                    pair.second
+                                )
+                            ) {
+                                println("inhere1 :" + cell.position)
+                                valueFilled = true
+                                cell.removeValue(pair.first)
+                                cell.removeValue(pair.second)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         println("solved")
