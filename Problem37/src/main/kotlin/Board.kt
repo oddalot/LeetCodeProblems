@@ -113,6 +113,86 @@ class Board(board: Array<CharArray>) {
                     }
                 }
             }
+
+            columns.forEach { column ->
+                val nakedSubsets: MutableMap<Pair<Value, Value>, Int> = mutableMapOf()
+                column.forEach { cell ->
+                    if (cell.possibleValues.size == 2) {
+                        val first = if (cell.possibleValues.first() < cell.possibleValues.last()) {
+                            cell.possibleValues.first()
+                        } else {
+                            cell.possibleValues.last()
+                        }
+                        val second = if (first == cell.possibleValues.first()) {
+                            cell.possibleValues.last()
+                        } else {
+                            cell.possibleValues.first()
+                        }
+                        val foundSubset = nakedSubsets[Pair(first, second)]
+                        if (foundSubset == null) {
+                            nakedSubsets[Pair(first, second)] = 1
+                        } else {
+                            nakedSubsets[Pair(first, second)] = foundSubset + 1
+                        }
+                    }
+                }
+
+                nakedSubsets.forEach { (pair, value) ->
+                    if (value == 2) {
+                        column.forEach { cell ->
+                            if (cell.possibleValues.size > 2 && cell.possibleValues.contains(pair.first) && cell.possibleValues.contains(
+                                    pair.second
+                                )
+                            ) {
+                                println("inhere2 :" + cell.position)
+                                valueFilled = true
+                                cell.removeValue(pair.first)
+                                cell.removeValue(pair.second)
+                            }
+                        }
+                    }
+                }
+            }
+
+            boxes.forEach { box ->
+                val nakedSubsets: MutableMap<Pair<Value, Value>, Int> = mutableMapOf()
+                box.forEach { cell ->
+                    if (cell.possibleValues.size == 2) {
+                        val first = if (cell.possibleValues.first() < cell.possibleValues.last()) {
+                            cell.possibleValues.first()
+                        } else {
+                            cell.possibleValues.last()
+                        }
+                        val second = if (first == cell.possibleValues.first()) {
+                            cell.possibleValues.last()
+                        } else {
+                            cell.possibleValues.first()
+                        }
+                        val foundSubset = nakedSubsets[Pair(first, second)]
+                        if (foundSubset == null) {
+                            nakedSubsets[Pair(first, second)] = 1
+                        } else {
+                            nakedSubsets[Pair(first, second)] = foundSubset + 1
+                        }
+                    }
+                }
+
+                nakedSubsets.forEach { (pair, value) ->
+                    if (value == 2) {
+                        box.forEach { cell ->
+                            if (cell.possibleValues.size > 2 && cell.possibleValues.contains(pair.first) && cell.possibleValues.contains(
+                                    pair.second
+                                )
+                            ) {
+                                println("inhere3 :" + cell.position)
+                                valueFilled = true
+                                cell.removeValue(pair.first)
+                                cell.removeValue(pair.second)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         println("solved")
@@ -158,65 +238,6 @@ class Board(board: Array<CharArray>) {
             println("-------------------------------------------------------")
         }
     }
-
-    /*
-    private val Cell.possibleValues: Set<Value>
-        get() {
-            val rowValues = rows[position / 9]
-            val columnValues = columns[position % 9]
-            val boxValues = boxes[((position / 3) % 3) + ((position / 27) * 3)]
-
-            return allPossibleValues - rowValues - columnValues - boxValues
-        }
-
-    private val Cell.otherBoxPossibleValues: Set<Value>
-        get() {
-            val boxValues = boxes[((position / 3) % 3) + ((position / 27) * 3)]
-            val otherPossibleValues = mutableSetOf<Value>()
-            boxValues.cells.forEach { cell ->
-                if (cell.position != position) {
-                    otherPossibleValues.addAll(cell.possibleValues)
-                }
-            }
-
-            return otherPossibleValues
-        }
-
-    private val Cell.otherRowPossibleValues: Set<Value>
-        get() {
-            val rowValues = rows[position / 9]
-            val otherPossibleValues = mutableSetOf<Value>()
-            rowValues.cells.forEach { cell ->
-                if (cell.position != position) {
-                    otherPossibleValues.addAll(cell.possibleValues)
-                }
-            }
-
-            return otherPossibleValues
-        }
-    private val Cell.otherColumnPossibleValues: Set<Value>
-        get() {
-            val columnValues = columns[position % 9]
-            val otherPossibleValues = mutableSetOf<Value>()
-            columnValues.cells.forEach { cell ->
-                if (cell.position != position) {
-                    otherPossibleValues.addAll(cell.possibleValues)
-                }
-            }
-
-            return otherPossibleValues
-        }
-
-
-    fun printPossibleValuesForPosition(position: Int) {
-        val rowValues = rows[position / 9].values
-        val columnValues = columns[position % 9].values
-        val boxValues = boxes[((position / 3) % 3) + ((position / 27) * 3)].values
-        println(allPossibleValues - rowValues - columnValues - boxValues)
-    }
-
-
-     */
 
     private fun Cell.setUniqueValue(value: Value) {
         if (value == EMPTY) return
